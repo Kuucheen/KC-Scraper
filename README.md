@@ -13,5 +13,5 @@ How to use sites:
     
 ### <p align="center">Requirements</p>
 
-    Python 3 or higher
-    pystyle (pip install -U -r requirements.txt)
+<a href="https://www.python.org/">Python3</a> or higher
+´pip install -U -r requirements.txt´
