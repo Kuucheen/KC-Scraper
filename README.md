@@ -6,9 +6,9 @@ An open-source proxy scraper
 -----
 ### <p align="center">Features</p>
 
-Threads
+• Threads
 
-Auto remove not reachable websites
+• Auto remove not reachable websites
 
 
 -----
