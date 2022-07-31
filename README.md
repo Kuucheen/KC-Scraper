@@ -15,4 +15,4 @@ How to use sites:
 
 <a href="https://www.python.org/">Python3</a> or higher
 
-´pip install -U -r requirements.txt´
+`pip install -U -r requirements.txt`
