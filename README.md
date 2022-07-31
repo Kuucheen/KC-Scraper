@@ -12,6 +12,10 @@ An open-source proxy scraper
 
 
 -----
+### <p align="center">How to use</p>
+
+Install requirements, put your proxysites in sites.txt and start KC-Scraper.py
+
 
 How NOT to use sites:
  
