@@ -1,7 +1,7 @@
 # KC-Scraper
 An open-source proxy scraper
 
-![grafik](https://user-images.githubusercontent.com/70746714/182048507-8775f6dc-5422-4430-bce6-a121711c917c.png)
+![grafik](https://user-images.githubusercontent.com/70746714/182048595-c49474f0-d2ef-4097-906b-fdca439ca82b.png)
 
 How NOT to use sites:
  
