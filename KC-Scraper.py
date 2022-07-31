@@ -104,7 +104,7 @@ def main():
 
 def scrape(site: str):
     global proxies, threadcount, proxycount
-    #random useragent
+    #random useragent by (idk dm me if you are the guy) but thank you helped me learn how to use httpx
     uas=['Mozilla/5.0 (X11; CrOS x86_64 14588.123.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.72 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12.4; rv:101.0) Gecko/20100101 Firefox/101.0', 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36', 'Mozilla/5.0 (Linux; Android 12; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Mobile Safari/537.36']
     site = site.replace("\n", "")
     proxycount = len(proxies)
