@@ -11,7 +11,7 @@ How to use sites:
 
    ![grafik](https://user-images.githubusercontent.com/70746714/182048366-fa0c43ae-df9b-4c3c-bdb4-8b903a0ad7d6.png)
     
-Requirements:
+### <p align="center">Requirements</p>
 
     Python 3 or higher
     pystyle (pip install -U -r requirements.txt)
