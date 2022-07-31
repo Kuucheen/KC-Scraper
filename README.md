@@ -16,8 +16,9 @@ An open-source proxy scraper
 
 Install requirements, put your proxysites in sites.txt and start KC-Scraper.py
 
+Notice:
 
-How NOT to use sites:
+How to NOT use sites:
  
    ![grafik](https://user-images.githubusercontent.com/70746714/182048403-e5f1445d-6c8b-4928-a3cb-acd4e4b5a84d.png)
 
