@@ -1,5 +1,5 @@
 # KC-Scraper
-An open-source proxy scraper
+An open-source proxy scraper able to scrape from every website
 
 ![grafik](https://user-images.githubusercontent.com/70746714/182049128-e56320de-01cc-4566-acce-c897acb36665.png)
 
@@ -15,6 +15,10 @@ An open-source proxy scraper
 ### <p align="center">How to use</p>
 
 Install requirements, put your proxysites in sites.txt and start KC-Scraper.py
+
+You can use any sites make sure you are able to see proxys in the website
+
+Example site: https://openproxy.space/list/http
 
 Notice:
 
