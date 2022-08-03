@@ -108,6 +108,7 @@ def scrape(site: str):
     uas=['Mozilla/5.0 (X11; CrOS x86_64 14588.123.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.72 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12.4; rv:101.0) Gecko/20100101 Firefox/101.0', 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36', 'Mozilla/5.0 (Linux; Android 12; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Mobile Safari/537.36']
     site = site.replace("\n", "")
     proxycount = len(proxies)
+    finished = False
     try:
         with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent':random.choice(uas)},follow_redirects=True) as client:
             r = client.get(site, timeout=10).text
@@ -122,19 +123,19 @@ def scrape(site: str):
             for _ in range(r.count(":")):
                 pos = r.find(":")
                 if r[pos-1].isdigit() and r[pos+1].isdigit():
-                    for port in range(6, 1, -1):
-                        if proxycount == len(proxies):
-                            for ip in range(13, 6, -1):
+                    for port in range(5, 0, -1):
+                        if finished == False:
+                            for ip in range(15, 6, -1):
                                 proxy = f"{r[pos-ip:pos]}{r[pos:pos+port]}"
                                 if re.match(pattern, proxy):
                                     proxies.add(proxy)
                                     proxycount += 1
+                                    finished = True
                                     break
                             
                         else:   
+                            finished = False
                             break
-                if proxycount != len(proxies):
-                    proxycount = len(proxies)
                 r = r.replace(":", "", 1)
         
     threadcount -= 1
