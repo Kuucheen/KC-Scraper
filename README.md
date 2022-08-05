@@ -22,13 +22,13 @@ Example site: https://openproxy.space/list/http
 
 -----
 
-<p align="center">Premades</p>
+### <p align="center">Premades</p>
 
 You can add and delete these as you like if you have good ones open a pull request
 
 -----
 
-<p align="center">Notice</p>
+### <p align="center">Notice</p>
 
 How to NOT use sites:
  
