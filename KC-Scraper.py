@@ -32,15 +32,49 @@ def main():
     print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
     print("\n"*3)
 
-    clearing = input(f"{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
+    premades = input(f"{white}[{color}^{white}] {color}Use premades [y/n] {white}>> {color}")
 
-    if clearing != "y" and clearing != "ye" and clearing != "yes" and clearing != "n" and clearing != "no":
+    if premades == "yes" or premades == "y":
+        os.system("cls")
+        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
+
+        premades = input(f"\n\n{white}[{color}^{white}] {white}>> {color}")
+
+        if premades == "1":
+            config = "premades/http.txt"
+        elif premades == "2":
+            config = "premades/socks4.txt"
+        elif premades == "3":
+            config = "premades/socks5.txt"
+        else:
+            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
+            time.sleep(3)
+            main()
+            exit()
+    elif premades == "no" or premades == "n":
+        config = "sites.txt"
+
+        os.system("cls")
+        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+
+        clearing = input(f"\n\n\n{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
+
+        if clearing != "y" and clearing != "ye" and clearing != "yes" and clearing != "n" and clearing != "no":
+            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
+            time.sleep(3)
+            main()
+            exit()
+        elif clearing == "y" or clearing == "ye" or clearing == "yes":
+            clearing = True
+    
+    else:
         print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
         time.sleep(3)
         main()
         exit()
-    elif clearing == "y" or clearing == "ye" or clearing == "yes":
-        clearing = True
+
+
 
     threads = input(f"{white}[{color}^{white}] {color}Threads {white}>> {color}")
     print()
@@ -54,7 +88,7 @@ def main():
     
     start = time.time()
 
-    with open("sites.txt") as sites:
+    with open(config) as sites:
 
         sitelist = sites.readlines()
 
