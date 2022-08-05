@@ -20,7 +20,11 @@ You can use any site, but make sure you are able to see proxys in the website
 
 Example site: https://openproxy.space/list/http
 
-Notice:
+<p align="center">Premades</p>
+
+You can add and delete these as you like if you have good ones open a pull request
+
+<p align="center">Notice</p>
 
 How to NOT use sites:
  
