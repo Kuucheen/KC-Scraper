@@ -6,6 +6,7 @@ An open-source proxy scraper able to scrape from almost every website
 -----
 ### <p align="center">Features</p>
 
+
     • Threads
 
     • Auto remove not reachable websites
@@ -13,6 +14,7 @@ An open-source proxy scraper able to scrape from almost every website
 
 -----
 ### <p align="center">How to use</p>
+
 
 Install requirements, put your proxysites in sites.txt and start KC-Scraper.py
 
@@ -24,11 +26,13 @@ Example site: https://openproxy.space/list/http
 
 ### <p align="center">Premades</p>
 
+
 You can add and delete these as you like if you have good ones open a pull request
 
 -----
 
 ### <p align="center">Notice</p>
+
 
 How to NOT use sites:
  
@@ -40,6 +44,7 @@ How to use sites:
  
 -----
 ### <p align="center">Requirements</p>
+
 
 <a href="https://www.python.org/">Python3</a> or higher
 
