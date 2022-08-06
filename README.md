@@ -1,4 +1,4 @@
-### <p align="center">KC-Scraper</p>
+# <p align="center">KC-Scraper</p>
 -----
 
 An open-source proxy scraper able to scrape from almost every website
