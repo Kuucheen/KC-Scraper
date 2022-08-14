@@ -1,11 +1,12 @@
 #by github.com/Kuucheen
-import re, os, time, threading, random, ctypes, json
+import re, os, time, threading, random, ctypes
 
 try:
-    import httpx
+    import httpx, yaml
     from pystyle import Colors, Colorate, Center
 except ImportError:
     os.system('python -m pip install httpx')
+    os.system('python -m pip install pyyaml')
     os.system('python -m pip install pystyle')
     import httpx
     from pystyle import Colors, Colorate, Center
@@ -22,8 +23,8 @@ color = Colors.StaticMIX((Colors.purple, Colors.blue))
 def main():
     global threadcount, clearing
 
-    with open("settings.json") as setting:
-        settings = json.load(setting)
+    with open("settings.yaml") as setting:
+        settings = yaml.safe_load(setting.read())
 
     premades = settings["premades"]
     clearing = settings["removewebsites"]

@@ -1,0 +1,9 @@
+{
+
+    "premades": "?", # '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
+
+    "removewebsites": "?", # '?' for asking | 'y' or 'n'
+
+    "threads": "?" # '?' for asking | '[Threadcount]'
+
+}
