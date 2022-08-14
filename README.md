@@ -52,6 +52,7 @@ Installing automatically if not installed
 
 `httpx`
 `pystyle`
+`pyyaml`
 
 <a href="https://www.python.org/">Python3</a> or higher
 
