@@ -48,7 +48,7 @@ How to use sites:
 ### <p align="center">Requirements</p>
 
 
-`Installing automatically if not installed`
+Installing automatically if not installed
 
 `httpx`
 `pystyle`
