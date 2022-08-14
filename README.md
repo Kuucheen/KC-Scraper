@@ -26,6 +26,12 @@ Example site: https://openproxy.space/list/http
 
 -----
 
+### <p align="center">Settings</p>
+
+These are for automatisation if you always want/dont want to use sth
+
+-----
+
 ### <p align="center">Premades</p>
 
 
