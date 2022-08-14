@@ -1,17 +1,33 @@
 #by github.com/Kuucheen
-import re, os, time, threading, httpx, random, ctypes
-from pystyle import Colors, Colorate, Center
+import re, os, time, threading, random, ctypes, json
+
+try:
+    import httpx
+    from pystyle import Colors, Colorate, Center
+except ImportError:
+    os.system('python -m pip install httpx')
+    os.system('python -m pip install pystyle')
+    import httpx
+    from pystyle import Colors, Colorate, Center
 
 proxies = set([])
 goodsites = set([])
 proxycount = 0
 threadcount = 0
-clearing = "n"
+clearing = ""
 white = Colors.light_gray
 color = Colors.StaticMIX((Colors.purple, Colors.blue))
 
+
 def main():
     global threadcount, clearing
+
+    with open("settings.json") as setting:
+        settings = json.load(setting)
+
+    premades = settings["premades"]
+    clearing = settings["removewebsites"]
+    threads = settings["threads"]
 
     terminal()
 
@@ -32,31 +48,41 @@ def main():
     print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
     print("\n"*3)
 
-    premades = input(f"{white}[{color}^{white}] {color}Use premades [y/n] {white}>> {color}")
+    if premades == "?":
+        premades = input(f"{white}[{color}^{white}] {color}Use premades [y/n] {white}>> {color}")
+        if premades == "yes" or premades == "y":
+            os.system("cls")
+            print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+            print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
 
-    if premades == "yes" or premades == "y":
-        os.system("cls")
-        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
-        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
+            premades = input(f"\n\n{white}[{color}^{white}] {white}>> {color}")
 
-        premades = input(f"\n\n{white}[{color}^{white}] {white}>> {color}")
-
-        if premades == "1":
-            config = "premades/http.txt"
-        elif premades == "2":
-            config = "premades/socks4.txt"
-        elif premades == "3":
-            config = "premades/socks5.txt"
-        else:
+        elif premades != "no" and premades != "n":
             print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
             time.sleep(3)
             main()
             exit()
-    elif premades == "no" or premades == "n":
-        config = "sites.txt"
 
-        os.system("cls")
-        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+    elif premades != "1" and premades != "2" and premades != "3" and premades != "n":
+        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at premades")
+        input()
+        exit()
+
+    config = {"1": "premades/http.txt", "2": "premades/socks4.txt", "3": "premades/socks5.txt", "n": "sites.txt", "no": "sites.txt"}
+
+    try:
+        config = config[premades]
+    except KeyError:
+        print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
+        time.sleep(3)
+        main()
+        exit()
+
+
+    os.system("cls")
+    print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+
+    if clearing == "?":
 
         clearing = input(f"\n\n\n{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
 
@@ -65,27 +91,38 @@ def main():
             time.sleep(3)
             main()
             exit()
-        elif clearing == "y" or clearing == "ye" or clearing == "yes":
-            clearing = True
+    elif clearing != "y" and clearing != "ye" and clearing != "yes" and clearing != "n" and clearing != "no":
+        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removewebsites")
+        input()
+        exit()
     
-    else:
-        print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
-        time.sleep(3)
-        main()
+    if clearing == "y" or clearing == "ye" or clearing == "yes":
+        clearing = True
+
+
+    if threads == "?":
+        threads = input(f"{white}[{color}^{white}] {color}Threads {white}>> {color}")
+    elif threads.isdigit() == False:
+        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at threads")
+        input()
         exit()
 
-
-
-    threads = input(f"{white}[{color}^{white}] {color}Threads {white}>> {color}")
-    print()
 
     try:
         threads = int(threads)
     except ValueError:
-        print(f"{white}[{color}!{white}] Thread needs a number")
+        print(f"{white}[{color}!{white}] {color}Thread needs a number")
         time.sleep(3)
+        main()
+        exit()
+
+    if threads < 1:
+        print(f"{white}[{color}!{white}] {color}Thread needs a number greater than 0")
+        time.sleep(3)
+        main()
         exit()
     
+    print()
     start = time.time()
 
     with open(config) as sites:
@@ -121,7 +158,7 @@ def main():
 
         print(f"{white}[{color}^{white}] Removing {color}not reachable Websites\n")
 
-        with open("sites.txt", "w") as inp:
+        with open(config, "w") as inp:
 
             for site in goodsites:
                 inp.write(site + "\n")
@@ -174,9 +211,10 @@ def scrape(site: str):
         
     threadcount -= 1
 
-
 def terminal(string:str = ""):
     ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
+
+
 
 
 
