@@ -35,14 +35,7 @@ You can add and delete these as you like if you have good ones open a pull reque
 
 ### <p align="center">Notice</p>
 
-
-How to NOT use sites:
- 
-   ![grafik](https://user-images.githubusercontent.com/70746714/182048403-e5f1445d-6c8b-4928-a3cb-acd4e4b5a84d.png)
-
-How to use sites:
-
-   ![grafik](https://user-images.githubusercontent.com/70746714/182048366-fa0c43ae-df9b-4c3c-bdb4-8b903a0ad7d6.png)
+always put http:// or https:// before a website
  
 -----
 ### <p align="center">Requirements</p>
