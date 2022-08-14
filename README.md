@@ -48,6 +48,11 @@ How to use sites:
 ### <p align="center">Requirements</p>
 
 
+`Installing automatically if not installed`
+
+`httpx`
+`pystyle`
+
 <a href="https://www.python.org/">Python3</a> or higher
 
-`pip install -U -r requirements.txt`
+
