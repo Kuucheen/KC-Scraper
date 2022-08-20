@@ -5,7 +5,7 @@ try:
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 except ImportError:
-    os.system('python -m pip install httpx')
+    os.system('python -m pip install httpx[http2]')
     os.system('python -m pip install pyyaml')
     os.system('python -m pip install pystyle')
     import httpx, yaml
@@ -184,10 +184,8 @@ def scrape(site: str):
     try:
         with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent':random.choice(uas)},follow_redirects=True) as client:
             r = client.get(site, timeout=10).text
-    except ConnectionError:
+    except:
         print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
-    except TimeoutError:
-        print(f"{white}[{Colors.red}!{white}] Timeout at {color}{site}")
     else:
         print(f"{white}[{Colors.green}+{white}] Scraping {color}{site}")
         if clearing == True:
