@@ -49,7 +49,7 @@ always put http:// or https:// before a website
 
 Installing automatically if not installed
 
-`httpx`
+`httpx[http2]`
 `pystyle`
 `pyyaml`
 
