@@ -1,4 +1,3 @@
-https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt
 https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all
 https://openproxy.space/list/http
 https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt
@@ -6,3 +5,19 @@ https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt
 https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt
 http://pubproxy.com/api/proxy
 https://www.juproxy.com/free_api
+https://api.openproxylist.xyz/http.txt
+https://raw.githubusercontent.com/hyperbeats/proxy-list/main/http.txt
+https://raw.githubusercontent.com/jetkai/proxy-list/main/archive/txt/proxies-http.txt
+https://raw.githubusercontent.com/jetkai/proxy-list/main/archive/txt/proxies-https.txt
+https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt
+https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-https.txt
+https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt
+https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt
+https://raw.githubusercontent.com/proxy4parsing/proxy-list/main/http.txt
+https://raw.githubusercontent.com/roosterkid/openproxylist/main/https_raw.txt
+https://raw.githubusercontent.com/shiftytr/proxy-list/master/http.txt
+https://raw.githubusercontent.com/thespeedx/proxy-list/master/http.txt
+https://www.proxy-list.download/api/v1/get?type=http
+https://www.proxy-list.download/api/v1/get?type=https
+https://www.proxyscan.io/download?type=http
+https://www.proxyscan.io/download?type=https

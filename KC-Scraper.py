@@ -13,6 +13,7 @@ except ImportError:
 
 proxies = set([])
 goodsites = set([])
+sitelist = []
 proxycount = 0
 threadcount = 0
 clearing = ""
@@ -21,7 +22,7 @@ color = Colors.StaticMIX((Colors.purple, Colors.blue))
 
 
 def main():
-    global threadcount, clearing
+    global threadcount, clearing, sitelist, start
 
     with open("settings.yaml") as setting:
         settings = yaml.safe_load(setting.read())
@@ -126,16 +127,18 @@ def main():
     print()
     start = time.time()
 
+
     with open(config) as sites:
 
         sitelist = sites.readlines()
+        threading.Thread(target=terminalthread).start()
 
         while len(sitelist) > 0:
             if threadcount < threads:
                 threading.Thread(target=scrape, args=[sitelist[0]]).start()
                 threadcount += 1
                 sitelist.pop(0)
-                terminal(f"| Remaining sites {len(sitelist)} | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
+#                terminal(f"| Remaining sites {len(sitelist)} | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
 
         while threadcount > 0:
             try:
@@ -179,7 +182,6 @@ def scrape(site: str):
     #random useragent by (idk dm me if you are the guy) but thank you helped me learn how to use httpx
     uas=['Mozilla/5.0 (X11; CrOS x86_64 14588.123.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.72 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12.4; rv:101.0) Gecko/20100101 Firefox/101.0', 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36', 'Mozilla/5.0 (Linux; Android 12; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Mobile Safari/537.36']
     site = site.replace("\n", "")
-    proxycount = len(proxies)
     finished = False
     try:
         with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent':random.choice(uas)},follow_redirects=True) as client:
@@ -215,6 +217,9 @@ def scrape(site: str):
 def terminal(string:str = ""):
     ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
 
+def terminalthread():
+    while len(sitelist) > 0:
+        terminal(f"| Remaining sites {len(sitelist)} | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
 
 
 
