@@ -122,19 +122,22 @@ def main():
         clearingproxy = True
 
     if threads == "?":
-        try:
-            threads = int(input(f"\n{white}[{color}^{white}] {color}Threads {white}>> {color}"))
-        except ValueError:
-            print(f"{white}[{color}!{white}] {color}Thread needs a number")
-            time.sleep(3)
-            main()
-            exit()
+
+        threads = input(f"\n{white}[{color}^{white}] {color}Threads {white}>> {color}")
 
     elif threads.isdigit() == False:
         print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at threads")
         input()
         exit()
 
+    try:
+        threads = int(threads)
+    except ValueError:
+        print(f"{white}[{color}!{white}] {color}Thread needs a number")
+        time.sleep(3)
+        main()
+        exit()
+        
     if threads < 1:
         print(f"{white}[{color}!{white}] {color}Thread needs a number greater than 0")
         time.sleep(3)
