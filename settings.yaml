@@ -1,7 +1,9 @@
 {
-    premades: "?", # '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
+    premades: "n", # '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
 
-    removewebsites: "?", # '?' for asking | 'y' or 'n'
+    removewebsites: "y", # Removes not connectable websites | '?' for asking | 'y' or 'n'
+
+    removeproxyless: "y", # Removes websites if no proxies are found | '?' for asking | 'y' or 'n'
 
     threads: "?" # '?' for asking | '[Threadcount]'
 }
