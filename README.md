@@ -42,6 +42,7 @@ You can add and delete these as you like if you have good ones open a pull reque
 ### <p align="center">Notice</p>
 
 always put http:// or https:// before a website
+
 Dont use gigantic ip lists with 100k+ proxies, it will take a lot of time to scrape them
  
 -----
