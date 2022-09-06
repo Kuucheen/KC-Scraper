@@ -174,7 +174,7 @@ def main():
         for i in proxies:
             output.write(i.replace("\n", "") + "\n")
     
-    if clearingcnt == True:
+    if clearingcnt == True or clearingproxy == True:
 
         print(f"{white}[{color}^{white}] Removing {color}not reachable Websites\n")
 
@@ -194,44 +194,23 @@ def main():
 
 def scrape(site: str):
     global proxies, threadcount, proxycount
-    #random useragent by (idk dm me if you are the guy) but thank you helped me learn how to use httpx
     uas=['Mozilla/5.0 (X11; CrOS x86_64 14588.123.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.72 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12.4; rv:101.0) Gecko/20100101 Firefox/101.0', 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36', 'Mozilla/5.0 (Linux; Android 12; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Mobile Safari/537.36']
     site = site.replace("\n", "")
-    finished = False
-    localproxycount = 0
     try:
         with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent':random.choice(uas)},follow_redirects=True) as client:
             r = client.get(site, timeout=10).text
     except:
         print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
     else:
-        print(f"{white}[{Colors.green}+{white}] Scraping {color}{site}")
-        if clearingcnt == True:
-            goodsites.add(site)
-        pattern = r'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\:[0-9]+$'
-        if r.count(":") > 0 and r.count(".") > 2:
-            for _ in range(r.count(":")):
-                pos = r.find(":")
-                if r[pos-1].isdigit() and r[pos+1].isdigit():
-                    for port in range(5, 0, -1):
-                        if finished == False:
-                            for ip in range(15, 6, -1):
-                                proxy = f"{r[pos-ip:pos]}{r[pos:pos+port]}"
-                                if re.match(pattern, proxy):
-                                    proxies.add(proxy)
-                                    localproxycount = 1
-                                    proxycount += 1
-                                    finished = True
-                                    break
-                            
-                        else:   
-                            finished = False
-                            break
-                r = r.replace(":", "", 1)
-    if site in goodsites and localproxycount == 0:
-        print(f"{white}[{Colors.orange}!{white}] No proxies were found on {color}{site}")
-        if clearingproxy == True:
-            goodsites.remove(site)
+        goodsites.add(site)
+        locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
+        length = len(locProxies)
+        print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
+        localproxycount = length
+        proxycount += length
+        proxies = proxies | set(locProxies)
+    if site in goodsites and localproxycount == 0 and clearingproxy == True:
+        goodsites.remove(site)
     threadcount -= 1
 
 def terminal(string:str = ""):
