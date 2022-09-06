@@ -12,6 +12,8 @@ An open-source proxy scraper able to scrape from almost every website
     • Threads
 
     • Auto remove not reachable websites
+    
+    • Auto remove sites where no proxies are found
 
 
 -----
