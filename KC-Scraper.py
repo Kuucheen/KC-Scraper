@@ -23,7 +23,7 @@ color = Colors.StaticMIX((Colors.purple, Colors.blue))
 
 
 def main():
-    global threadcount, clearingcnt, sitelist, start
+    global threadcount, clearingcnt, clearingproxy, sitelist, start
 
     with open("settings.yaml") as setting:
         settings = yaml.safe_load(setting.read())
@@ -176,8 +176,8 @@ def main():
     
     if clearingcnt == True or clearingproxy == True:
 
-        print(f"{white}[{color}^{white}] Removing {color}not reachable Websites\n")
-
+        print(f"{white}[{color}^{white}] Removing {color}bad Websites\n")
+        
         with open(config, "w") as inp:
 
             for site in goodsites:
@@ -206,11 +206,10 @@ def scrape(site: str):
         locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
         length = len(locProxies)
         print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
-        localproxycount = length
         proxycount += length
         proxies = proxies | set(locProxies)
-    if site in goodsites and localproxycount == 0 and clearingproxy == True:
-        goodsites.remove(site)
+        if clearingproxy == True and length == 0:
+            goodsites.remove(site)
     threadcount -= 1
 
 def terminal(string:str = ""):
