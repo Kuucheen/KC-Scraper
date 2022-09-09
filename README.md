@@ -6,6 +6,10 @@ An open-source proxy scraper able to scrape from almost every website
 ![grafik](https://user-images.githubusercontent.com/70746714/182049128-e56320de-01cc-4566-acce-c897acb36665.png)
 
 -----
+
+### <p align="center">this tool is made for educational purposes only</p>
+
+-----
 ### <p align="center">Features</p>
 
 
@@ -17,8 +21,6 @@ An open-source proxy scraper able to scrape from almost every website
 
 
 -----
-
-### this tool is made for educational purposes only
 
 ### <p align="center">How to use</p>
 
