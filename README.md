@@ -17,6 +17,9 @@ An open-source proxy scraper able to scrape from almost every website
 
 
 -----
+
+this tool is made for ##educational purposes only
+
 ### <p align="center">How to use</p>
 
 
