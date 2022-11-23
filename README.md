@@ -72,4 +72,3 @@ pro tip: dont forget to put http:// or https:// before a website
 <br>                                 
 <p align="center"><strong>this tool is made for educational purposes only</strong><br><br>if you have ideas or better websites make a pull request</p>
 
------
