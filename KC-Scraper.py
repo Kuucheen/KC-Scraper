@@ -14,54 +14,47 @@ except ImportError:
 proxies = set([])
 goodsites = set([])
 sitelist = []
+timeout = ""
 proxycount = 0
 threadcount = 0
 clearingcnt = ""
 clearingproxy = ""
+randomUseragent = ""
 white = Colors.light_gray
-color = Colors.StaticMIX((Colors.purple, Colors.blue))
+color = Colors.StaticMIX((Colors.purple, Colors.blue))    
 
 
 def main():
-    global threadcount, clearingcnt, clearingproxy, sitelist, start
+    global threadcount, clearingcnt, clearingproxy, randomUseragent, timeout, sitelist, start
 
     with open("settings.yaml") as setting:
         settings = yaml.safe_load(setting.read())
 
     premades = settings["premades"]
-    clearingcnt = settings["removewebsites"]
-    clearingproxy = settings["removeproxyless"]
+    clearingcnt = settings["removeWebsites"]
+    clearingproxy = settings["removeProxyless"]
+    randomUseragent = settings["randomUseragent"]
     threads = settings["threads"]
+    timeout = settings["timeout"]
 
     terminal()
 
-    os.system("cls")
+    printLogo()
+    print()
 
-
-    logo = """
- _     _ _______     ______                                     
-(_)   | (_______)   / _____)                                    
- _____| |_         ( (____   ____  ____ _____ ____  _____  ____ 
-|  _   _) |         \____ \ / ___)/ ___|____ |  _ \| ___ |/ ___)
-| |  \ \| |_____    _____) | (___| |   / ___ | |_| | ____| |    
-|_|   \_)\______)  (______/ \____)_|   \_____|  __/|_____)_|    
-                                             |_|                
-                    by github.com/Kuucheen
-"""
-
-    print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
-    print("\n"*3)
+    yes = ["yes", "y", "ye"]
+    no = ["no", "n", "nah"]
 
     if premades == "?":
         premades = input(f"{white}[{color}^{white}] {color}Use premades [y/n] {white}>> {color}")
-        if premades == "yes" or premades == "y":
+        if premades in yes:
             os.system("cls")
-            print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+            printLogo()
             print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
 
-            premades = input(f"\n\n{white}[{color}^{white}] {white}>> {color}")
+            premades = input(f"\n{white}[{color}^{white}] {white}>> {color}")
 
-        elif premades != "no" and premades != "n":
+        elif premades not in no:
             print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
             time.sleep(3)
             main()
@@ -83,26 +76,27 @@ def main():
         exit()
 
 
-    os.system("cls")
-    print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+    printLogo()
 
     if clearingcnt == "?":
 
-        clearingcnt = input(f"\n\n\n{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
+        clearingcnt = input(f"\n{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
 
-        if clearingcnt != "y" and clearingcnt != "ye" and clearingcnt != "yes" and clearingcnt != "n" and clearingcnt != "no":
+        if clearingcnt not in yes and clearingcnt not in no:
             print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
             time.sleep(3)
             main()
             exit()
-    elif clearingcnt != "y" and clearingcnt != "ye" and clearingcnt != "yes" and clearingcnt != "n" and clearingcnt != "no":
+    elif clearingcnt not in yes and clearingcnt not in no:
         print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removewebsites")
         input()
         exit()
     
-    if clearingcnt == "y" or clearingcnt == "ye" or clearingcnt == "yes":
+    if clearingcnt in yes:
         clearingcnt = True
-    
+
+    printLogo()
+
     if clearingproxy == "?":
 
         clearingproxy = input(f"\n{white}[{color}^{white}] {color}Remove sites with no proxies [y/n] {white}>> {color}")
@@ -120,9 +114,55 @@ def main():
 
     if clearingproxy == "y" or clearingproxy == "ye" or clearingproxy == "yes":
         clearingproxy = True
+    
+    printLogo()
+    
+    if randomUseragent == "?":
+
+        randomUseragent = input(f"\n{white}[{color}^{white}] {color}Random Useragent? [y/n] {white}>> {color}")
+
+        if randomUseragent not in yes and randomUseragent not in no:
+            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
+            time.sleep(3)
+            main()
+            exit()
+    
+    elif randomUseragent not in yes and randomUseragent not in no:
+            print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removeproxyless")
+            input()
+            exit()
+
+    if randomUseragent in yes:
+        randomUseragent = True
+
+    
+    printLogo()
+
+    if timeout == "?":
+        timeout = input(f"\n{white}[{color}^{white}] {color}Timeout [seconds] {white}>> {color}")
+
+    elif timeout.isdigit() == False:
+        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at threads")
+        input()
+        exit()
+
+    try:
+        timeout = int(timeout)
+    except ValueError:
+        print(f"{white}[{color}!{white}] {color}Timeout needs a number")
+        time.sleep(3)
+        main()
+        exit()
+    
+    if timeout < 1:
+        print(f"{white}[{color}!{white}] {color}Timeout must be higher than 0")
+        time.sleep(3)
+        main()
+        exit()
+    
+    printLogo()
 
     if threads == "?":
-
         threads = input(f"\n{white}[{color}^{white}] {color}Threads {white}>> {color}")
 
     elif threads.isdigit() == False:
@@ -144,7 +184,7 @@ def main():
         main()
         exit()
     
-    print()
+    printLogo()
     start = time.time()
 
     with open(config) as sites:
@@ -194,15 +234,16 @@ def main():
 
 def scrape(site: str):
     global proxies, threadcount, proxycount
-    uas=['Mozilla/5.0 (X11; CrOS x86_64 14588.123.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.72 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12.4; rv:101.0) Gecko/20100101 Firefox/101.0', 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36', 'Mozilla/5.0 (Linux; Android 12; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.99 Mobile Safari/537.36']
+    uas=["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"]
     site = site.replace("\n", "")
     try:
-        with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent':random.choice(uas)},follow_redirects=True) as client:
-            r = client.get(site, timeout=10).text
+        with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent': random.choice(uas) if randomUseragent == True else uas[0]},follow_redirects=True) as client:
+            r = client.get(site, timeout=timeout).text
     except:
         print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
     else:
         goodsites.add(site)
+        r = r.replace("&colon", ":")
         locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
         length = len(locProxies)
         print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
@@ -210,7 +251,8 @@ def scrape(site: str):
         proxies = proxies | set(locProxies)
         if clearingproxy == True and length == 0:
             goodsites.remove(site)
-    threadcount -= 1
+    finally:
+        threadcount -= 1
 
 def terminal(string:str = ""):
     ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
@@ -218,6 +260,21 @@ def terminal(string:str = ""):
 def terminalthread():
     while len(sitelist) > 0:
         terminal(f"| Remaining sites {len(sitelist)} | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
+
+def printLogo():
+    logo = """
+ _     _ _______     ______                                     
+(_)   | (_______)   / _____)                                    
+ _____| |_         ( (____   ____  ____ _____ ____  _____  ____ 
+|  _   _) |         \____ \ / ___)/ ___|____ |  _ \| ___ |/ ___)
+| |  \ \| |_____    _____) | (___| |   / ___ | |_| | ____| |    
+|_|   \_)\______)  (______/ \____)_|   \_____|  __/|_____)_|    
+                                             |_|                
+                    by github.com/Kuucheen
+
+"""
+    os.system("cls")
+    print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
 
 
 

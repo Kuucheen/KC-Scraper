@@ -1,9 +1,13 @@
 {
-    premades: "?", # '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
+    premades: "?", # Sets the premade file | '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
 
-    removewebsites: "?", # Removes not connectable websites | '?' for asking | 'y' or 'n'
+    removeWebsites: "?", # Removes not connectable websites | '?' for asking | 'y' or 'n'
 
-    removeproxyless: "?", # Removes websites if no proxies are found | '?' for asking | 'y' or 'n'
+    removeProxyless: "?", # Removes websites if no proxies are found | '?' for asking | 'y' or 'n'
 
-    threads: "?" # '?' for asking | '[Threadcount]'
+    randomUseragent: "?", # Decides if random useragent is used | '?' for asking | 'y' for random useragent | 'n' will use the most common useragent
+
+    threads: "?", # '?' for asking | '[Threadcount]'
+
+    timeout: "10" # Sets timeout for the sites | '?' for asking | '[seconds]' | '10' is default
 }
