@@ -7,7 +7,7 @@
 
 ----
      
-# <p align="center">🌫 KC-Scraper 🌫</p>
+# <p align="center">👾 KC-Scraper 👾</p>
 <br>
 <br>
 
