@@ -31,7 +31,7 @@
                      
     • Very fast
 
-    • Highly customizeable
+    • Highly customizable
     
     • Settings for automatisation
                      
