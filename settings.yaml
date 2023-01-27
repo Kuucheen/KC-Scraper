@@ -5,7 +5,7 @@
 
     removeProxyless: "?", # Removes websites if no proxies are found | '?' for asking | 'y' or 'n'
 
-    randomUseragent: "?", # Decides if random useragent is used | '?' for asking | 'y' for random useragent | 'n' will use the most common useragent
+    randomUseragent: "n", # Decides if random useragent is used | '?' for asking | 'y' for random useragent | 'n' will use the most common useragent
 
     threads: "?", # '?' for asking | '[Threadcount]'
 

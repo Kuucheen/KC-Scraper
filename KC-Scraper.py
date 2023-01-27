@@ -5,9 +5,7 @@ try:
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 except ImportError:
-    os.system('python -m pip install httpx[http2]')
-    os.system('python -m pip install pyyaml')
-    os.system('python -m pip install pystyle')
+    os.system('python -m pip install httpx[http2] pyyaml pystyle')
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 
@@ -27,6 +25,82 @@ color = Colors.StaticMIX((Colors.purple, Colors.blue))
 def main():
     global threadcount, clearingcnt, clearingproxy, randomUseragent, timeout, sitelist, start
 
+    printLogo()
+    print()
+    config, clearingcnt, clearingproxy, randomUseragent, threads, timeout = getSettings()
+
+    terminal()
+    
+    start = time.time()
+
+    #dispatcher
+    with open(config) as sites:
+
+        sitelist = sites.readlines()
+        threading.Thread(target=terminalthread).start()
+
+        while len(sitelist) > 0:
+            if threadcount < threads:
+                threading.Thread(target=scrape, args=[sitelist[0]]).start()
+                threadcount += 1
+                sitelist.pop(0)
+
+        while threadcount > 0:
+            terminal(f"| Waiting for threads to finish | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
+
+        terminal()
+        
+
+    lenproxies = len(proxies)
+    print(f"\n{white}[{color}^{white}] Removed {color}{proxycount-lenproxies} {white}Duplicates\n")
+    print(f"{white}[{color}^{white}] Remaining Proxies: {color}{lenproxies}{white}\n")
+    print(f"{white}[{color}^{white}] Writing {color}Proxies\n")
+
+    with open("proxies.txt", "w") as output:
+
+        for i in proxies:
+            output.write(i.replace("\n", "") + "\n")
+    
+    if clearingcnt == True or clearingproxy == True:
+
+        print(f"{white}[{color}^{white}] Removing {color}bad Websites\n")
+        
+        with open(config, "w") as inp:
+
+            for site in goodsites:
+                inp.write(site + "\n")
+
+    terminal()
+
+    print(f"{white}[{color}^{white}] Finished in {color}{time.time()-start:.2f}s{white}!\n")
+    print("You can now close the tab")
+
+    input("")
+
+
+def scrape(site: str):
+    global proxies, threadcount, proxycount
+    uas=["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"]
+    site = site.replace("\n", "")
+    try:
+        with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent': random.choice(uas) if randomUseragent == True else uas[0]},follow_redirects=True) as client:
+            r = client.get(site, timeout=timeout).text
+    except:
+        print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
+    else:
+        goodsites.add(site)
+        r = r.replace("&colon", ":")
+        locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
+        length = len(locProxies)
+        print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
+        proxycount += length
+        proxies = proxies | set(locProxies)
+        if clearingproxy == True and length == 0:
+            goodsites.remove(site)
+    finally:
+        threadcount -= 1
+
+def getSettings() -> list:
     with open("settings.yaml") as setting:
         settings = yaml.safe_load(setting.read())
 
@@ -36,11 +110,6 @@ def main():
     randomUseragent = settings["randomUseragent"]
     threads = settings["threads"]
     timeout = settings["timeout"]
-
-    terminal()
-
-    printLogo()
-    print()
 
     yes = ["yes", "y", "ye"]
     no = ["no", "n", "nah"]
@@ -183,76 +252,8 @@ def main():
         time.sleep(3)
         main()
         exit()
-    
-    printLogo()
-    start = time.time()
 
-    with open(config) as sites:
-
-        sitelist = sites.readlines()
-        threading.Thread(target=terminalthread).start()
-
-        while len(sitelist) > 0:
-            if threadcount < threads:
-                threading.Thread(target=scrape, args=[sitelist[0]]).start()
-                threadcount += 1
-                sitelist.pop(0)
-
-        while threadcount > 0:
-            terminal(f"| Waiting for threads to finish | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
-
-        terminal()
-        
-
-    lenproxies = len(proxies)
-    print(f"\n{white}[{color}^{white}] Removed {color}{proxycount-lenproxies} {white}Duplicates\n")
-    print(f"{white}[{color}^{white}] Remaining Proxies: {color}{lenproxies}{white}\n")
-    print(f"{white}[{color}^{white}] Writing {color}Proxies\n")
-
-    with open("proxies.txt", "w") as output:
-
-        for i in proxies:
-            output.write(i.replace("\n", "") + "\n")
-    
-    if clearingcnt == True or clearingproxy == True:
-
-        print(f"{white}[{color}^{white}] Removing {color}bad Websites\n")
-        
-        with open(config, "w") as inp:
-
-            for site in goodsites:
-                inp.write(site + "\n")
-
-    terminal()
-
-    print(f"{white}[{color}^{white}] Finished in {color}{time.time()-start:.2f}s{white}!\n")
-    print("You can now close the tab")
-
-    input("")
-
-
-
-def scrape(site: str):
-    global proxies, threadcount, proxycount
-    uas=["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"]
-    site = site.replace("\n", "")
-    try:
-        with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent': random.choice(uas) if randomUseragent == True else uas[0]},follow_redirects=True) as client:
-            r = client.get(site, timeout=timeout).text
-    except:
-        print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
-    else:
-        goodsites.add(site)
-        r = r.replace("&colon", ":")
-        locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
-        length = len(locProxies)
-        print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
-        proxycount += length
-        proxies = proxies | set(locProxies)
-        if clearingproxy == True and length == 0:
-            goodsites.remove(site)
-    finally:
-        threadcount -= 1
+    return config, clearingcnt, clearingproxy, randomUseragent, threads, timeout
 
 def terminal(string:str = ""):
     ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
@@ -277,6 +278,5 @@ def printLogo():
     print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
 
 
-
-
-main()
+if __name__ == "__main__":
+    main()
