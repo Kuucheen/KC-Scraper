@@ -44,13 +44,12 @@
 ### <p align="center">❓ How to use ❓</p>
 <br>
 
-Put your proxysites in sites.txt or make configs in premades and start KC-Scraper.py
+     1. Place your proxy sites in the "sites.txt" file or create configs in the "premades" folder.
 
-You can use any site, but make sure you are able to see proxys in the website
+     2. Ensure that the website you choose is capable of displaying proxies. For instance, you can use the 
+        following example site: https://openproxy.space/list/http.
 
-Example site: https://openproxy.space/list/http
-
-pro tip: dont forget to put http:// or https:// before a website
+     3. (secret) Pro tip: Don't forget to add "http://" or "https://" before the website URL.
 <br>
 
 -----
