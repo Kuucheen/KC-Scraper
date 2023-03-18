@@ -46,8 +46,8 @@
 
      1. Place your proxy sites in the "sites.txt" file or create configs in the "premades" folder.
 
-     2. Ensure that the website you choose is capable of displaying proxies. For instance, you can use the 
-        following example site: https://openproxy.space/list/http.
+     2. Ensure that the website you choose is capable of displaying proxies. For instance, you can use 
+        the following example site: https://openproxy.space/list/http.
 
      3. (secret) Pro tip: Don't forget to add "http://" or "https://" before the website URL.
 <br>
