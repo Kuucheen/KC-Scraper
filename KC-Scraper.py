@@ -5,7 +5,7 @@ try:
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 except ImportError:
-    os.system('python -m pip install httpx[http2] pyyaml pystyle')
+    os.system('python -m pip install httpx httpx[http2] pyyaml pystyle')
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 
@@ -87,6 +87,8 @@ def scrape(site: str):
             r = client.get(site, timeout=timeout).text
     except:
         print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
+        if clearingcnt != True:
+            goodsites.add(site)
     else:
         goodsites.add(site)
         r = r.replace("&colon", ":")
@@ -170,18 +172,18 @@ def getSettings() -> list:
 
         clearingproxy = input(f"\n{white}[{color}^{white}] {color}Remove sites with no proxies [y/n] {white}>> {color}")
 
-        if clearingproxy != "y" and clearingproxy != "ye" and clearingproxy != "yes" and clearingproxy != "n" and clearingproxy != "no":
+        if clearingproxy not in yes and clearingproxy not in no:
             print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
             time.sleep(3)
             main()
             exit()
     
-    elif clearingproxy != "y" and clearingproxy != "ye" and clearingproxy != "yes" and clearingproxy != "n" and clearingproxy != "no":
+    elif clearingproxy not in yes and clearingproxy not in no:
             print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removeproxyless")
             input()
             exit()
 
-    if clearingproxy == "y" or clearingproxy == "ye" or clearingproxy == "yes":
+    if clearingproxy in yes:
         clearingproxy = True
     
     printLogo()
@@ -252,6 +254,8 @@ def getSettings() -> list:
         time.sleep(3)
         main()
         exit()
+
+    printLogo()
 
     return config, clearingcnt, clearingproxy, randomUseragent, threads, timeout
 
