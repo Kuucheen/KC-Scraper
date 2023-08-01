@@ -1,286 +1,307 @@
-#by github.com/Kuucheen
 import re, os, time, threading, random, ctypes
 
 try:
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
 except ImportError:
-    os.system('python -m pip install httpx httpx[http2] pyyaml pystyle')
-    import httpx, yaml
-    from pystyle import Colors, Colorate, Center
-
-proxies = set([])
-goodsites = set([])
-sitelist = []
-timeout = ""
-proxycount = 0
-threadcount = 0
-clearingcnt = ""
-clearingproxy = ""
-randomUseragent = ""
-white = Colors.light_gray
-color = Colors.StaticMIX((Colors.purple, Colors.blue))    
+    print("Looks like you forgot to install the requirements!")
+    print("use \"python -m pip install -r requirements.txt\" to install")
 
 
-def main():
-    global threadcount, clearingcnt, clearingproxy, randomUseragent, timeout, sitelist, start
+class KCScraper:
+    def __init__(self):
+        self.proxies = set()
+        self.goodsites = set()
+        self.sitelist = []
+        self.timeout = ""
+        self.proxycount = 0
+        self.clearingcnt = ""
+        self.clearingproxy = ""
+        self.randomUseragent = ""
 
-    printLogo()
-    print()
-    config, clearingcnt, clearingproxy, randomUseragent, threads, timeout = getSettings()
+        self.start = 0
 
-    terminal()
-    
-    start = time.time()
+        self.white = Colors.light_gray
+        self.color = Colors.StaticMIX((Colors.purple, Colors.blue))
 
-    #dispatcher
-    with open(config) as sites:
+        self.prefix_warning = f"{self.white}[{self.color}!{self.white}] {self.color}"
+        self.prefix_plus = f"{self.white}[{Colors.green}+{self.white}] {self.color}"
+        self.prefix_error = f"{self.white}[{Colors.red}!{self.white}] {self.color}"
+        self.prefix_info = f"{self.white}[{self.color}^{self.white}] {self.color}"
 
-        sitelist = sites.readlines()
-        threading.Thread(target=terminalthread).start()
+    def main(self):
+        self.printLogo()
+        print()
+        self.terminal()
 
-        while len(sitelist) > 0:
-            if threadcount < threads:
-                threading.Thread(target=scrape, args=[sitelist[0]]).start()
-                threadcount += 1
-                sitelist.pop(0)
+        config, self.clearingcnt, self.clearingproxy, self.randomUseragent, threads, self.timeout = self.getSettings()
 
-        while threadcount > 0:
-            terminal(f"| Waiting for threads to finish | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
+        self.start = time.time()
 
-        terminal()
-        
+        # dispatcher
+        with open(config) as sites:
+            self.sitelist = sites.readlines()
+            threading.Thread(target=self.terminalthread).start()
 
-    lenproxies = len(proxies)
-    print(f"\n{white}[{color}^{white}] Removed {color}{proxycount-lenproxies} {white}Duplicates\n")
-    print(f"{white}[{color}^{white}] Remaining Proxies: {color}{lenproxies}{white}\n")
-    print(f"{white}[{color}^{white}] Writing {color}Proxies\n")
+            while len(self.sitelist) > 0:
+                if self.activethreads() < threads:
+                    threading.Thread(target=self.scrape, args=[self.sitelist[0]]).start()
+                    self.sitelist.pop(0)
 
-    with open("proxies.txt", "w") as output:
+            while self.activethreads() > 0:
+                self.terminal(f"| Waiting for threads to finish | active threads {self.activethreads()} | Proxies {self.proxycount} | Time {time.time() - self.start:.2f}s")
 
-        for i in proxies:
-            output.write(i.replace("\n", "") + "\n")
-    
-    if clearingcnt == True or clearingproxy == True:
+            self.terminal()
 
-        print(f"{white}[{color}^{white}] Removing {color}bad Websites\n")
-        
-        with open(config, "w") as inp:
+        print()
 
-            for site in goodsites:
-                inp.write(site + "\n")
+        lenproxies = len(self.proxies)
+        print(f"{self.prefix_info} Removed {self.color}{self.proxycount - lenproxies} {self.white}Duplicates\n")
+        print(f"{self.prefix_info} Remaining Proxies: {self.color}{lenproxies}{self.white}\n")
+        print(f"{self.prefix_info} Writing {self.color}Proxies\n")
 
-    terminal()
+        with open("proxies.txt", "w") as output:
+            for i in self.proxies:
+                output.write(i.replace("\n", "") + "\n")
 
-    print(f"{white}[{color}^{white}] Finished in {color}{time.time()-start:.2f}s{white}!\n")
-    print("You can now close the tab")
+        if self.clearingcnt == True or self.clearingproxy == True:
+            print(f"{self.prefix_info} Removing {self.color}bad Websites\n")
+            with open(config, "w") as inp:
+                for site in self.goodsites:
+                    inp.write(site + "\n")
 
-    input("")
+        self.terminal()
 
+        print(f"{self.prefix_info} Finished in {self.color}{time.time() - self.start:.2f}s{self.white}!\n")
+        print("You can now close the tab")
+        input("")
 
-def scrape(site: str):
-    global proxies, threadcount, proxycount
-    uas=["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)"]
-    site = site.replace("\n", "")
-    try:
-        with httpx.Client(http2=True,headers = {'accept-language': 'en','user-agent': random.choice(uas) if randomUseragent == True else uas[0]},follow_redirects=True) as client:
-            r = client.get(site, timeout=timeout).text
-    except:
-        print(f"{white}[{Colors.red}!{white}] Failed connecting to {color}{site}")
-        if clearingcnt != True:
-            goodsites.add(site)
-    else:
-        goodsites.add(site)
-        r = r.replace("&colon", ":")
-        locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
-        length = len(locProxies)
-        print(f"{white}[{Colors.green}+{white}] Scraped {color}{length}{white} from {color}{site}")
-        proxycount += length
-        proxies = proxies | set(locProxies)
-        if clearingproxy == True and length == 0:
-            goodsites.remove(site)
-    finally:
-        threadcount -= 1
+    def scrape(self, site: str):
+        uas = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0",
+            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)",
+            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)",
+        ]
+        site = site.replace("\n", "")
+        try:
+            with httpx.Client(
+                    http2=True,
+                    headers={
+                        "accept-language": "en",
+                        "user-agent": random.choice(uas) if self.randomUseragent == True else uas[0],
+                    },
+                    follow_redirects=True,
+            ) as client:
+                r = client.get(site, timeout=self.timeout).text
+        except:
+            print(f"{self.prefix_warning} Failed connecting to {self.color}{site}")
+            if self.clearingcnt != True:
+                self.goodsites.add(site)
+        else:
+            self.goodsites.add(site)
+            r = r.replace("&colon", ":")
+            locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
+            length = len(locProxies)
+            print(f"{self.prefix_plus} Scraped {self.color}{length}{self.white} from {self.color}{site}")
+            self.proxycount += length
+            self.proxies = self.proxies | set(locProxies)
+            if self.clearingproxy and length == 0:
+                self.goodsites.remove(site)
 
-def getSettings() -> list:
-    with open("settings.yaml") as setting:
-        settings = yaml.safe_load(setting.read())
+    def getSettings(self) -> tuple:
+        with open("settings.yaml") as setting:
+            settings = yaml.safe_load(setting.read())
 
-    premades = settings["premades"]
-    clearingcnt = settings["removeWebsites"]
-    clearingproxy = settings["removeProxyless"]
-    randomUseragent = settings["randomUseragent"]
-    threads = settings["threads"]
-    timeout = settings["timeout"]
+        presets = settings["presets"]
+        self.clearingcnt = settings["removeWebsites"]
+        self.clearingproxy = settings["removeProxyless"]
+        self.randomUseragent = settings["randomUseragent"]
+        threads = settings["threads"]
+        self.timeout = settings["timeout"]
 
-    yes = ["yes", "y", "ye"]
-    no = ["no", "n", "nah"]
+        yes = ["yes", "y", "ye"]
+        no = ["no", "n", "nah"]
 
-    if premades == "?":
-        premades = input(f"{white}[{color}^{white}] {color}Use premades [y/n] {white}>> {color}")
-        if premades in yes:
-            os.system("cls")
-            printLogo()
-            print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
+        if presets == "?":
+            presets = input(f"{self.prefix_info} Use presets [y/n] {self.white}>> {self.color}")
+            if presets in yes:
+                os.system("cls")
+                self.printLogo()
+                print(Colorate.Diagonal(
+                    Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))),
+                    Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
 
-            premades = input(f"\n{white}[{color}^{white}] {white}>> {color}")
+                presets = input(f"\n{self.prefix_info} {self.white}>> {self.color}")
 
-        elif premades not in no:
-            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
-            time.sleep(3)
-            main()
-            exit()
+            elif presets not in no:
+                print(f"{self.prefix_warning} No option was chosen returning to home..")
+                time.sleep(3)
+                self.main()
+                exit()
 
-    elif premades != "1" and premades != "2" and premades != "3" and premades != "n":
-        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at premades")
-        input()
-        exit()
-
-    config = {"1": "premades/http.txt", "2": "premades/socks4.txt", "3": "premades/socks5.txt", "n": "sites.txt", "no": "sites.txt"}
-
-    try:
-        config = config[premades]
-    except KeyError:
-        print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
-        time.sleep(3)
-        main()
-        exit()
-
-
-    printLogo()
-
-    if clearingcnt == "?":
-
-        clearingcnt = input(f"\n{white}[{color}^{white}] {color}Remove not connectable site [y/n] {white}>> {color}")
-
-        if clearingcnt not in yes and clearingcnt not in no:
-            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
-            time.sleep(3)
-            main()
-            exit()
-    elif clearingcnt not in yes and clearingcnt not in no:
-        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removewebsites")
-        input()
-        exit()
-    
-    if clearingcnt in yes:
-        clearingcnt = True
-
-    printLogo()
-
-    if clearingproxy == "?":
-
-        clearingproxy = input(f"\n{white}[{color}^{white}] {color}Remove sites with no proxies [y/n] {white}>> {color}")
-
-        if clearingproxy not in yes and clearingproxy not in no:
-            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
-            time.sleep(3)
-            main()
-            exit()
-    
-    elif clearingproxy not in yes and clearingproxy not in no:
-            print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removeproxyless")
+        elif presets not in {"1", "2", "3", "n"}:
+            print(f"{self.prefix_error} Error in settings.json at presets")
             input()
             exit()
 
-    if clearingproxy in yes:
-        clearingproxy = True
-    
-    printLogo()
-    
-    if randomUseragent == "?":
+        config = {"1": "presets/http.txt", "2": "presets/socks4.txt", "3": "presets/socks5.txt", "n": "sites.txt",
+                  "no": "sites.txt"}
 
-        randomUseragent = input(f"\n{white}[{color}^{white}] {color}Random Useragent? [y/n] {white}>> {color}")
-
-        if randomUseragent not in yes and randomUseragent not in no:
-            print(f"{white}[{color}!{white}] {color}No option was choosen returning to home..")
+        try:
+            config = config[presets]
+        except KeyError:
+            print(f"{self.prefix_warning} No option was chosen returning to home..")
             time.sleep(3)
-            main()
+            self.main()
             exit()
-    
-    elif randomUseragent not in yes and randomUseragent not in no:
-            print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at removeproxyless")
+
+        self.printLogo()
+
+        if self.clearingcnt == "?":
+            self.clearingcnt = input(
+                f"{self.prefix_info} Remove not connectable site [y/n] {self.white}>> {self.color}"
+            )
+
+            if self.clearingcnt not in yes and self.clearingcnt not in no:
+                print(f"{self.prefix_warning} No option was chosen returning to home..")
+                time.sleep(3)
+                self.main()
+                exit()
+        elif self.clearingcnt not in yes and self.clearingcnt not in no:
+            print(f"{self.prefix_error} Error in settings.json at removewebsites")
             input()
             exit()
 
-    if randomUseragent in yes:
-        randomUseragent = True
+        if self.clearingcnt in yes:
+            self.clearingcnt = True
 
-    
-    printLogo()
+        self.printLogo()
 
-    if timeout == "?":
-        timeout = input(f"\n{white}[{color}^{white}] {color}Timeout [seconds] {white}>> {color}")
+        if self.clearingproxy == "?":
+            self.clearingproxy = input(
+                f"{self.prefix_info} Remove sites with no proxies [y/n] {self.white}>> {self.color}"
+            )
 
-    elif timeout.isdigit() == False:
-        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at threads")
-        input()
-        exit()
+            if self.clearingproxy not in yes and self.clearingproxy not in no:
+                print(f"{self.prefix_warning} No option was chosen returning to home..")
+                time.sleep(3)
+                self.main()
+                exit()
 
-    try:
-        timeout = int(timeout)
-    except ValueError:
-        print(f"{white}[{color}!{white}] {color}Timeout needs a number")
-        time.sleep(3)
-        main()
-        exit()
-    
-    if timeout < 1:
-        print(f"{white}[{color}!{white}] {color}Timeout must be higher than 0")
-        time.sleep(3)
-        main()
-        exit()
-    
-    printLogo()
+        elif self.clearingproxy not in yes and self.clearingproxy not in no:
+            print(f"{self.prefix_error} Error in settings.json at removeproxyless")
+            input()
+            exit()
 
-    if threads == "?":
-        threads = input(f"\n{white}[{color}^{white}] {color}Threads {white}>> {color}")
+        if self.clearingproxy in yes:
+            self.clearingproxy = True
 
-    elif threads.isdigit() == False:
-        print(f"{white}[{Colors.red}!{white}] {Colors.red}Error{white} in settings.json at threads")
-        input()
-        exit()
+        self.printLogo()
 
-    try:
-        threads = int(threads)
-    except ValueError:
-        print(f"{white}[{color}!{white}] {color}Thread needs a number")
-        time.sleep(3)
-        main()
-        exit()
-        
-    if threads < 1:
-        print(f"{white}[{color}!{white}] {color}Thread needs a number greater than 0")
-        time.sleep(3)
-        main()
-        exit()
+        if self.randomUseragent == "?":
+            self.randomUseragent = input(
+                f"{self.prefix_info} Random Useragent? [y/n] {self.white}>> {self.color}"
+            )
 
-    printLogo()
+            if self.randomUseragent not in yes and self.randomUseragent not in no:
+                print(f"{self.prefix_warning} No option was chosen returning to home..")
+                time.sleep(3)
+                self.main()
+                exit()
 
-    return config, clearingcnt, clearingproxy, randomUseragent, threads, timeout
+        elif self.randomUseragent not in yes and self.randomUseragent not in no:
+            print(f"{self.prefix_error} Error in settings.json at removeproxyless")
+            input()
+            exit()
 
-def terminal(string:str = ""):
-    ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
+        if self.randomUseragent in yes:
+            self.randomUseragent = True
 
-def terminalthread():
-    while len(sitelist) > 0:
-        terminal(f"| Remaining sites {len(sitelist)} | active threads {threadcount} | Proxies {proxycount} | Time {time.time()-start:.2f}s")
+        self.printLogo()
 
-def printLogo():
-    logo = """
- _     _ _______     ______                                     
-(_)   | (_______)   / _____)                                    
- _____| |_         ( (____   ____  ____ _____ ____  _____  ____ 
-|  _   _) |         \____ \ / ___)/ ___|____ |  _ \| ___ |/ ___)
-| |  \ \| |_____    _____) | (___| |   / ___ | |_| | ____| |    
-|_|   \_)\______)  (______/ \____)_|   \_____|  __/|_____)_|    
-                                             |_|                
-                    by github.com/Kuucheen
+        if self.timeout == "?":
+            self.timeout = input(
+                f"{self.prefix_info} Timeout [seconds] {self.white}>> {self.color}"
+            )
 
-"""
-    os.system("cls")
-    print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))), Center.XCenter(logo)))
+        elif not self.timeout.isdigit():
+            print(f"{self.prefix_error} Error in settings.json at threads")
+            input()
+            exit()
+
+        try:
+            self.timeout = int(self.timeout)
+        except ValueError:
+            print(f"{self.prefix_warning} Timeout needs a number")
+            time.sleep(3)
+            self.main()
+            exit()
+
+        if self.timeout < 1:
+            print(f"{self.prefix_warning} Timeout must be higher than 0")
+            time.sleep(3)
+            self.main()
+            exit()
+
+        self.printLogo()
+
+        if threads == "?":
+            threads = input(f"{self.prefix_info} Threads {self.white}>> {self.color}")
+
+        elif not threads.isdigit():
+            print(f"{self.prefix_error} Error in settings.json at threads")
+            input()
+            exit()
+
+        try:
+            threads = int(threads)
+        except ValueError:
+            print(f"{self.prefix_warning} Thread needs a number")
+            time.sleep(3)
+            self.main()
+            exit()
+
+        if threads < 1:
+            print(f"{self.prefix_warning} Thread needs a number greater than 0")
+            time.sleep(3)
+            self.main()
+            exit()
+
+        self.printLogo()
+
+        return config, self.clearingcnt, self.clearingproxy, self.randomUseragent, threads, self.timeout
+
+    def terminal(self, string: str = ""):
+        ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
+
+    def terminalthread(self):
+        while len(self.sitelist) > 0:
+            self.terminal(
+                f"| Remaining sites {len(self.sitelist)} | active threads {self.activethreads()} | Proxies {self.proxycount} | Time {time.time() - self.start:.2f}s"
+            )
+
+    def activethreads(self):
+        return threading.active_count()-1
+
+    def printLogo(self):
+        logo = """
+     _     _ _______     ______                                     
+    (_)   | (_______)   / _____)                                    
+     _____| |_         ( (____   ____  ____ _____ ____  _____  ____ 
+    |  _   _) |         \____ \ / ___)/ ___|____ |  _ \| ___ |/ ___)
+    | |  \ \| |_____    _____) | (___| |   / ___ | |_| | ____| |    
+    |_|   \_)\______)  (______/ \____)_|   \_____|  __/|_____)_|    
+                                                 |_|                
+                        by github.com/Kuucheen
+
+    """
+        os.system("cls")
+        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))),
+                                Center.XCenter(logo)))
 
 
 if __name__ == "__main__":
-    main()
+    KCScraper().main()

@@ -1,5 +1,5 @@
 {
-    premades: "?", # Sets the premade file | '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
+    presets: "?", # Sets the presets file | '?' for asking | 'n' for sites.txt | '1' for http/s | '2' for socks4 | '3' for socks5
 
     removeWebsites: "?", # Removes not connectable websites | '?' for asking | 'y' or 'n'
 
