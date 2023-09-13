@@ -19,6 +19,7 @@
 <img src="https://img.shields.io/github/issues/Kuucheen/KC-Scraper.svg">
 </div>
 
+<br>
 
 <p align="center">
 <img src="assets/preview.gif" width="800" height=420">
