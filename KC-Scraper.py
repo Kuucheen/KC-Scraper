@@ -23,6 +23,7 @@ class KCScraper:
 
         self.white = Colors.light_gray
         self.color = Colors.StaticMIX((Colors.purple, Colors.blue))
+        self.clear = "cls" if os.name == "nt" else "clear"
 
         self.prefix_warning = f"{self.white}[{self.color}!{self.white}] {self.color}"
         self.prefix_plus = f"{self.white}[{Colors.green}+{self.white}] {self.color}"
@@ -41,7 +42,8 @@ class KCScraper:
         # dispatcher
         with open(config) as sites:
             self.sitelist = sites.readlines()
-            threading.Thread(target=self.terminalthread).start()
+            if os.name == "nt":
+                threading.Thread(target=self.terminalthread).start()
 
             while len(self.sitelist) > 0:
                 if self.activethreads() < threads:
@@ -275,7 +277,8 @@ class KCScraper:
         return config, self.clearingcnt, self.clearingproxy, self.randomUseragent, threads, self.timeout
 
     def terminal(self, string: str = ""):
-        ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
+        if os.name == "nt":
+            ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
 
     def terminalthread(self):
         while len(self.sitelist) > 0:
@@ -298,7 +301,7 @@ class KCScraper:
                         by github.com/Kuucheen
 
     """
-        os.system("cls")
+        os.system(self.clear)
         print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))),
                                 Center.XCenter(logo)))
 
