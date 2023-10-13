@@ -38,6 +38,8 @@
 
     • Highly customizable
     
+    • Custom proxy delimiter
+
     • Settings for automatisation
                      
     • Presets get ~200 elite proxies
