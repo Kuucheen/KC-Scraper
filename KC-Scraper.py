@@ -3,26 +3,29 @@ import re, os, time, threading, random, ctypes
 try:
     import httpx, yaml
     from pystyle import Colors, Colorate, Center
-except ImportError:
+except ImportError as e:
     print("Looks like you forgot to install the requirements!")
     print("use \"python -m pip install -r requirements.txt\" to install")
+    print("Error: " + str(e))
 
 
 class KCScraper:
     def __init__(self):
+
         self.proxies = set()
-        self.goodsites = set()
-        self.sitelist = []
+        self.goodSites = set()
+        self.siteList = []
         self.timeout = ""
-        self.proxycount = 0
-        self.clearingcnt = ""
-        self.clearingproxy = ""
+        self.proxyCount = 0
+        self.clearingCNT = ""
+        self.clearingProxy = ""
+        self.proxyDelimiter = ""
         self.randomUseragent = ""
 
         self.start = 0
 
         self.white = Colors.light_gray
-        self.color = Colors.StaticMIX((Colors.purple, Colors.blue))
+        self.color = Colors.StaticMIX([Colors.purple, Colors.blue])
         self.clear = "cls" if os.name == "nt" else "clear"
 
         self.prefix_warning = f"{self.white}[{self.color}!{self.white}] {self.color}"
@@ -30,35 +33,45 @@ class KCScraper:
         self.prefix_error = f"{self.white}[{Colors.red}!{self.white}] {self.color}"
         self.prefix_info = f"{self.white}[{self.color}^{self.white}] {self.color}"
 
+        self.uas = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0",
+            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)",
+            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)",
+        ]
+
     def main(self):
         self.printLogo()
         print()
         self.terminal()
 
-        config, self.clearingcnt, self.clearingproxy, self.randomUseragent, threads, self.timeout = self.getSettings()
+        config, self.clearingCNT, self.clearingProxy, self.randomUseragent, threads, self.timeout = self.getSettings()
 
         self.start = time.time()
 
         # dispatcher
         with open(config) as sites:
-            self.sitelist = sites.readlines()
+            self.siteList = sites.readlines()
             if os.name == "nt":
                 threading.Thread(target=self.terminalthread).start()
 
-            while len(self.sitelist) > 0:
-                if self.activethreads() < threads:
-                    threading.Thread(target=self.scrape, args=[self.sitelist[0]]).start()
-                    self.sitelist.pop(0)
+            while len(self.siteList) > 0:
+                if self.activethreads() <= threads:
+                    threading.Thread(target=self.scrape, args=[self.siteList[0]]).start()
+                    self.siteList.pop(0)
 
             while self.activethreads() > 0:
-                self.terminal(f"| Waiting for threads to finish | active threads {self.activethreads()} | Proxies {self.proxycount} | Time {time.time() - self.start:.2f}s")
+                self.terminal(
+                    f"| Waiting for threads to finish | active threads {self.activethreads()} | Proxies {self.proxyCount} | Time {time.time() - self.start:.2f}s")
 
             self.terminal()
 
         print()
 
         lenproxies = len(self.proxies)
-        print(f"{self.prefix_info} Removed {self.color}{self.proxycount - lenproxies} {self.white}Duplicates\n")
+        print(f"{self.prefix_info} Removed {self.color}{self.proxyCount - lenproxies} {self.white}Duplicates\n")
         print(f"{self.prefix_info} Remaining Proxies: {self.color}{lenproxies}{self.white}\n")
         print(f"{self.prefix_info} Writing {self.color}Proxies\n")
 
@@ -66,10 +79,10 @@ class KCScraper:
             for i in self.proxies:
                 output.write(i.replace("\n", "") + "\n")
 
-        if self.clearingcnt == True or self.clearingproxy == True:
+        if self.clearingCNT or self.clearingProxy:
             print(f"{self.prefix_info} Removing {self.color}bad Websites\n")
             with open(config, "w") as inp:
-                for site in self.goodsites:
+                for site in self.goodSites:
                     inp.write(site + "\n")
 
         self.terminal()
@@ -79,50 +92,45 @@ class KCScraper:
         input("")
 
     def scrape(self, site: str):
-        uas = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0",
-            "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0; Trident/5.0)",
-            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0; MDDCJS)",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393",
-            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)",
-        ]
+
         site = site.replace("\n", "")
         try:
             with httpx.Client(
                     http2=True,
                     headers={
                         "accept-language": "en",
-                        "user-agent": random.choice(uas) if self.randomUseragent == True else uas[0],
+                        "user-agent": random.choice(self.uas) if self.randomUseragent else self.uas[0],
                     },
                     follow_redirects=True,
             ) as client:
                 r = client.get(site, timeout=self.timeout).text
         except:
             print(f"{self.prefix_warning} Failed connecting to {self.color}{site}")
-            if self.clearingcnt != True:
-                self.goodsites.add(site)
+            if not self.clearingCNT:
+                self.goodSites.add(site)
         else:
-            self.goodsites.add(site)
-            r = r.replace("&colon", ":")
-            locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}\b", r)
+            self.goodSites.add(site)
+            locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" +
+                                    f"[{self.proxyDelimiter}]" +
+                                    r"\d{1,5}\b", r.replace("&colon", ":"))
             length = len(locProxies)
             print(f"{self.prefix_plus} Scraped {self.color}{length}{self.white} from {self.color}{site}")
-            self.proxycount += length
+            self.proxyCount += length
             self.proxies = self.proxies | set(locProxies)
-            if self.clearingproxy and length == 0:
-                self.goodsites.remove(site)
+            if self.clearingProxy and length == 0:
+                self.goodSites.remove(site)
 
     def getSettings(self) -> tuple:
         with open("settings.yaml") as setting:
             settings = yaml.safe_load(setting.read())
 
         presets = settings["presets"]
-        self.clearingcnt = settings["removeWebsites"]
-        self.clearingproxy = settings["removeProxyless"]
+        self.clearingCNT = settings["removeWebsites"]
+        self.clearingProxy = settings["removeProxyless"]
         self.randomUseragent = settings["randomUseragent"]
         threads = settings["threads"]
         self.timeout = settings["timeout"]
+        self.proxyDelimiter = settings["proxyDelimiter"]
 
         yes = ["yes", "y", "ye"]
         no = ["no", "n", "nah"]
@@ -133,7 +141,7 @@ class KCScraper:
                 os.system("cls")
                 self.printLogo()
                 print(Colorate.Diagonal(
-                    Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))),
+                    Colors.DynamicMIX([Colors.dark_gray, Colors.StaticMIX([Colors.purple, Colors.blue])]),
                     Center.XCenter("\n[1] HTTP/S\t[2] SOCKS4\t[3] SOCKS5")))
 
                 presets = input(f"\n{self.prefix_info} {self.white}>> {self.color}")
@@ -162,44 +170,42 @@ class KCScraper:
 
         self.printLogo()
 
-        if self.clearingcnt == "?":
-            self.clearingcnt = input(
+        if self.clearingCNT == "?":
+            self.clearingCNT = input(
                 f"{self.prefix_info} Remove not connectable site [y/n] {self.white}>> {self.color}"
             )
 
-            if self.clearingcnt not in yes and self.clearingcnt not in no:
+            if self.clearingCNT not in yes and self.clearingCNT not in no:
                 print(f"{self.prefix_warning} No option was chosen returning to home..")
                 time.sleep(3)
                 self.main()
                 exit()
-        elif self.clearingcnt not in yes and self.clearingcnt not in no:
+        elif self.clearingCNT not in yes and self.clearingCNT not in no:
             print(f"{self.prefix_error} Error in settings.json at removewebsites")
             input()
             exit()
 
-        if self.clearingcnt in yes:
-            self.clearingcnt = True
+        self.clearingCNT = self.clearingCNT in yes
 
         self.printLogo()
 
-        if self.clearingproxy == "?":
-            self.clearingproxy = input(
+        if self.clearingProxy == "?":
+            self.clearingProxy = input(
                 f"{self.prefix_info} Remove sites with no proxies [y/n] {self.white}>> {self.color}"
             )
 
-            if self.clearingproxy not in yes and self.clearingproxy not in no:
+            if self.clearingProxy not in yes and self.clearingProxy not in no:
                 print(f"{self.prefix_warning} No option was chosen returning to home..")
                 time.sleep(3)
                 self.main()
                 exit()
 
-        elif self.clearingproxy not in yes and self.clearingproxy not in no:
-            print(f"{self.prefix_error} Error in settings.json at removeproxyless")
+        elif self.clearingProxy not in yes and self.clearingProxy not in no:
+            print(f"{self.prefix_error} Error in settings.json at removeProxyless")
             input()
             exit()
 
-        if self.clearingproxy in yes:
-            self.clearingproxy = True
+        self.clearingProxy = self.clearingProxy in yes
 
         self.printLogo()
 
@@ -219,8 +225,7 @@ class KCScraper:
             input()
             exit()
 
-        if self.randomUseragent in yes:
-            self.randomUseragent = True
+        self.randomUseragent = self.randomUseragent in yes
 
         self.printLogo()
 
@@ -274,20 +279,29 @@ class KCScraper:
 
         self.printLogo()
 
-        return config, self.clearingcnt, self.clearingproxy, self.randomUseragent, threads, self.timeout
+        if self.proxyDelimiter == "?":
+            self.proxyDelimiter = input(
+                f"{self.prefix_info} Proxy Delimiter {self.white}>> {self.color}"
+            )
+
+        self.printLogo()
+
+        #^^ i need a better solution for that
+
+        return config, self.clearingCNT, self.clearingProxy, self.randomUseragent, threads, self.timeout
 
     def terminal(self, string: str = ""):
         if os.name == "nt":
             ctypes.windll.kernel32.SetConsoleTitleW("KC Scraper | github.com/Kuucheen " + string)
 
     def terminalthread(self):
-        while len(self.sitelist) > 0:
+        while len(self.siteList) > 0:
             self.terminal(
-                f"| Remaining sites {len(self.sitelist)} | active threads {self.activethreads()} | Proxies {self.proxycount} | Time {time.time() - self.start:.2f}s"
+                f"| Remaining sites {len(self.siteList)} | active threads {self.activethreads()} | Proxies {self.proxyCount} | Time {time.time() - self.start:.2f}s"
             )
 
     def activethreads(self):
-        return threading.active_count()-1
+        return threading.active_count() - 1
 
     def printLogo(self):
         logo = """
@@ -302,7 +316,7 @@ class KCScraper:
 
     """
         os.system(self.clear)
-        print(Colorate.Diagonal(Colors.DynamicMIX((Colors.dark_gray, Colors.StaticMIX((Colors.purple, Colors.blue)))),
+        print(Colorate.Diagonal(Colors.DynamicMIX([Colors.dark_gray, Colors.StaticMIX([Colors.purple, Colors.blue])]),
                                 Center.XCenter(logo)))
 
 
