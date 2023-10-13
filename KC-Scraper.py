@@ -111,7 +111,7 @@ class KCScraper:
         else:
             self.goodSites.add(site)
             locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" +
-                                    f"[{self.proxyDelimiter}]" +
+                                    self.proxyDelimiter +
                                     r"\d{1,5}\b", r.replace("&colon", ":"))
             length = len(locProxies)
             print(f"{self.prefix_plus} Scraped {self.color}{length}{self.white} from {self.color}{site}")
