@@ -9,5 +9,7 @@
 
     threads: "?", # '?' for asking | '[Threadcount]'
 
-    timeout: "10" # Sets timeout for the sites | '?' for asking | '[seconds]' | '10' is default
+    timeout: "10", # Sets timeout for the sites | '?' for asking | '[seconds]' | '10' is default
+
+    proxyDelimiter: ":" # Set custom Delimiter for proxies. | '?' for asking | ':' is default | You can use multiple symbols to find multiple proxy formats.
 }
