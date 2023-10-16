@@ -21,6 +21,7 @@ class KCScraper:
         self.clearingProxy = ""
         self.proxyDelimiter = ""
         self.randomUseragent = ""
+        self.dictReplacements = {"&colon": ":", "</td><td>": ":"}
 
         self.start = 0
 
@@ -112,13 +113,19 @@ class KCScraper:
             self.goodSites.add(site)
             locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" +
                                     self.proxyDelimiter +
-                                    r"\d{1,5}\b", r.replace("&colon", ":"))
+                                    r"\d{1,5}\b", KCScraper.replaceAll(self, r))
             length = len(locProxies)
             print(f"{self.prefix_plus} Scraped {self.color}{length}{self.white} from {self.color}{site}")
             self.proxyCount += length
             self.proxies = self.proxies | set(locProxies)
             if self.clearingProxy and length == 0:
                 self.goodSites.remove(site)
+
+    def replaceAll(self, string: str) -> str:
+        for key, value in self.dictReplacements.items():
+            string = string.replace(key, value)
+
+        return string
 
     def getSettings(self) -> tuple:
         with open("settings.yaml") as setting:
