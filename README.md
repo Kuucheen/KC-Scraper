@@ -53,12 +53,19 @@
 ### <p align="center">❓ How to use ❓</p>
 <br>
 
-     1. Place your proxy sites in the "sites.txt" file or create configs in the "presets" folder.
+ 1. Place your proxy sites in the "sites.txt" file or create configs in the "presets" folder.
 
-     2. Ensure that the website you choose is capable of displaying proxies. For instance, you can use 
-        the following example site: https://openproxy.space/list/http.
 
-     3. (secret) Pro tip: Don't forget to add "http://" or "https://" before the website URL.
+ 2. Ensure that the website you choose is capable of displaying proxies. For instance, you can use 
+    the following example site: https://openproxy.space/list/http.
+
+
+4. Start the program
+
+
+5. Check the proxies using this [proxy checker](https://github.com/Kuucheen/KC-Checker)
+
+(secret) Pro tip: Don't forget to add "http://" or "https://" before the website URL.
 <br>
 
 -----
