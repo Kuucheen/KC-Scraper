@@ -90,5 +90,7 @@
 ----
 ### <p align="center">📌 Other 📌</p>
 <br>                                 
-<p align="center"><strong>this tool is made for educational purposes only</strong><br><br>if you have ideas or better websites make a pull request</p>
+<p align="center"><strong>this tool is made for educational purposes only</strong><br><br>If you need help with anything or want to suggest a feature join our <a href="https://discord.gg/7FWAGXzhkC">discord server</a>
+<br>
+<br></p>
 
