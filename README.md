@@ -17,6 +17,10 @@
 <img src="https://img.shields.io/github/downloads/Kuucheen/KC-Scraper/total.svg">
 <img src="https://img.shields.io/github/license/Kuucheen/KC-Scraper.svg">
 <img src="https://img.shields.io/github/issues/Kuucheen/KC-Scraper.svg">
+<br>
+<!--<a href="https://discord.gg/7FWAGXzhkC">
+  <img src="https://img.shields.io/discord/1196551495571738665?logo=discord&colorB=7289DA" alt="discord">
+</a>-->
 </div>
 
 <br>
@@ -63,7 +67,7 @@
 4. Start the program
 
 
-5. Check the proxies using this [proxy checker](https://github.com/Kuucheen/KC-Checker)
+5. (optional) Check the proxies using this [proxy checker](https://github.com/Kuucheen/KC-Checker)
 
 (secret) Pro tip: Don't forget to add "http://" or "https://" before the website URL.
 <br>
@@ -86,5 +90,7 @@
 ----
 ### <p align="center">📌 Other 📌</p>
 <br>                                 
-<p align="center"><strong>this tool is made for educational purposes only</strong><br><br>if you have ideas or better websites make a pull request</p>
+<p align="center"><strong>this tool is made for educational purposes only</strong><br><br>If you need help with anything or want to suggest a feature join our <a href="https://discord.gg/7FWAGXzhkC">discord server</a>
+<br>
+<br></p>
 
