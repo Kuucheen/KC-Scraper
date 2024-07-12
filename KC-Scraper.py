@@ -112,13 +112,13 @@ class KCScraper:
         else:
             self.goodSites.add(site)
 
-            # Replace opening HTML tags with ':'
-            r = re.sub(r'<[^/][^>]*>', ':', r)
-            # Remove closing HTML tags
-            r = re.sub(r'</[^>]*>', '', r)
+            r = re.sub(r"<[^/][^>]*>", self.proxyDelimiter, r)
+            r = re.sub(r"</[^>]*>", "", r)
+            r = r.replace("\n", self.proxyDelimiter)
+            r = r.replace(" ", self.proxyDelimiter)
 
-            while r.count("::") > 0:
-                r = r.replace("::", ":")
+            while r.count(self.proxyDelimiter*2) > 0:
+                r = r.replace(self.proxyDelimiter*2, self.proxyDelimiter)
 
             locProxies = re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" +
                                     self.proxyDelimiter +
