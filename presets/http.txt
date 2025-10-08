@@ -15,3 +15,4 @@ https://openproxy.space/list/http
 https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt
 https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-https.txt
 https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt
+https://proxik.cloud/proxy_list
