@@ -10,3 +10,4 @@ https://raw.githubusercontent.com/shiftytr/proxy-list/master/socks5.txt
 https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS5_RAW.txt
 https://www.proxy-list.download/api/v1/get?type=socks5
 https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt
+https://rcloak.com/api/proxies/raw?protocol=socks5

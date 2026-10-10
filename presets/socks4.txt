@@ -10,3 +10,4 @@ https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000
 https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt
 https://api.openproxylist.xyz/socks4.txt
 https://www.proxy-list.download/api/v1/get?type=socks4
+https://rcloak.com/api/proxies/raw?protocol=socks4
